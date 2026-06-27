@@ -1,18 +1,18 @@
+import Sidebar from "@/components/Sidebar";
+import Topbar from "@/components/Topbar";
 
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={ `h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        
-        {children}
-        </body>
-    </html>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1">
+        <Topbar />
+        <main className="p-8">{children}</main>
+      </div>
+    </div>
   );
 }
