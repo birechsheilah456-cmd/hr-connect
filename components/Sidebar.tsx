@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,7 +11,7 @@ import {
   Wallet,
   LineChart,
   Settings,
-  Plus,
+  LogOut,
 } from "lucide-react";
 
 const navItems = [
@@ -25,6 +26,12 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+function handleLogout() {
+  localStorage.removeItem("hrConnectSession");
+  router.push("/");
+}
 
   return (
     <aside className="flex h-screen w-72 flex-col justify-between bg-slate-900 text-slate-300">
@@ -61,11 +68,14 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-
+      
       <div className="p-4">
-        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-white py-3 text-sm font-semibold text-slate-900">
-          <Plus className="h-4 w-4" />
-          New Request
+        <button
+        onClick={handleLogout}
+        className="flex w-full items-center justify-center gap-2 rounded-lg bg-white py-3 text-sm font-semibold text-slate-900 hover:bg-red-50 hover:text-red-600 transition"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
         </button>
       </div>
     </aside>

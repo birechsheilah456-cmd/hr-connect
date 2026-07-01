@@ -4,8 +4,11 @@ import QuickActions from "@/components/QuickActions";
 import Milestones from "@/components/Milestones";
 import PayrollStatus from "@/components/PayrollStatus";
 import { Calendar, Download } from "lucide-react";
+import { employees, leaveRequests } from "@/lib/mock-data";
 
 export default function DashboardPage() {
+  const totalEmployees = employees.length;
+  const pendingLeave = leaveRequests.filter(r => r.status === "Pending").length;
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
@@ -28,10 +31,30 @@ export default function DashboardPage() {
       </div>
 
       <div className="mb-6 grid grid-cols-4 gap-5">
-        <StatCard label="TOTAL EMPLOYEES" value="1,284" accentColor="#2563eb" badge={{ text: "↗ +4%", tone: "blue" }} />
-        <StatCard label="ATTENDANCE RATE" value="98.2%" accentColor="#16a34a" badge={{ text: "✓ Target Met", tone: "green" }} />
-        <StatCard label="PENDING LEAVE" value="12" accentColor="#dc2626" badge={{ text: "! Urgent", tone: "red" }} />
-        <StatCard label="ACTIVE REVIEWS" value="45" accentColor="#0f172a" badge={{ text: "⧗ In Progress", tone: "blue" }} />
+        <StatCard
+          label="TOTAL EMPLOYEES"
+          value={totalEmployees.toLocaleString()}
+          accentColor="blue"
+          badge={{ text: "↗ +4%", tone: "blue" }}
+        />
+        <StatCard
+          label="ATTENDANCE RATE"
+          value="98.2%"
+          accentColor="green"
+          badge={{ text: "✓ Target Met", tone: "green" }}
+        />
+        <StatCard
+          label="PENDING LEAVE"
+          value={String(pendingLeave)}
+          accentColor="red"
+          badge={{ text: "! Urgent", tone: "red" }}
+        />
+        <StatCard
+          label="ACTIVE REVIEWS"
+          value="45"
+          accentColor="slate"
+          badge={{ text: "⧗ In Progress", tone: "blue" }}
+        />
       </div>
 
       <div className="grid grid-cols-3 gap-6">
