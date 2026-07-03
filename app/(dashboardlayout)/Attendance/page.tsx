@@ -1,11 +1,7 @@
 'use client';
 
-
-
 import React, { useState, useEffect } from 'react';
-
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 
 import { Input } from '@/components/ui/input';
@@ -167,6 +163,39 @@ const defaultData: AttendanceRecord[] = [
   { id: 3, name: "Leo Zhang", role: "Engineering", date: "Oct 25, 2023", clockIn: "09:45 AM", clockOut: "06:30 PM", hours: "8h 45m", status: "Late" },
 
 ];
+interface StatCardProps {
+  label: string;
+  value: string;
+  accentColor: string;
+  badge: { text: string; tone: 'blue' | 'green' | 'red' | 'amber' | 'purple' };
+}
+
+const toneStyles = {
+  blue:   'bg-blue-50 text-blue-700',
+  green:  'bg-green-50 text-green-700',
+  red:    'bg-red-50 text-red-700',
+  amber:  'bg-amber-50 text-amber-700',
+  purple: 'bg-purple-50 text-purple-700',
+};
+
+function StatCard({ label, value, accentColor, badge }: StatCardProps) {
+  return (
+    <div
+      className="rounded-xl border-l-4 bg-white p-5 shadow-sm"
+      style={{ borderLeftColor: accentColor }}
+    >
+      <p className="text-xs font-semibold tracking-wide text-slate-400">{label}</p>
+      <div className="mt-3 flex items-center justify-between">
+        <p className="text-3xl font-bold text-slate-900">{value}</p>
+        <span className={`rounded-md px-2 py-1 text-xs font-semibold ${toneStyles[badge.tone]}`}>
+          {badge.text}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+const departments = ["Marketing Team", "Operations", "Engineering", "HR & Admin", "Design Team", "Sales", "Finance"];
 
 
 
@@ -237,6 +266,16 @@ export default function AttendanceLog() {
 
     } catch {
 
+  useEffect(() => {
+    const saved = localStorage.getItem('attendanceRecords');
+    if (saved) {
+      setRecords(JSON.parse(saved));
+    } else {
+      const defaultData = [
+        { id: 1, name: "Sarah Jenkins", role: "Marketing Team", date: "Oct 25, 2023", clockIn: "08:45 AM", clockOut: "05:30 PM", hours: "8h 45m", status: "Present" },
+        { id: 2, name: "Marcus Vane", role: "Operations", date: "Oct 25, 2023", clockIn: "09:12 AM", clockOut: "06:05 PM", hours: "8h 53m", status: "Remote" },
+        { id: 3, name: "Leo Zhang", role: "Engineering", date: "Oct 25, 2023", clockIn: "09:45 AM", clockOut: "06:30 PM", hours: "8h 45m", status: "Late" },
+      ];
       setRecords(defaultData);
 
     }
@@ -367,6 +406,9 @@ export default function AttendanceLog() {
 
 
 
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto p-4 md:p-8">
+
         {/* Header */}
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -389,6 +431,8 @@ export default function AttendanceLog() {
 
                 <Plus className="w-5 h-5" />
 
+              <Button className="bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 px-6 py-2.5 text-base font-medium">
+                <Plus className="w-5 h-5" />
                 Mark Attendance
 
               </Button>
@@ -403,6 +447,7 @@ export default function AttendanceLog() {
 
                 <DialogTitle>Mark Attendance</DialogTitle>
 
+                <DialogTitle>Mark Attendance</DialogTitle>
               </DialogHeader>
 
               <div className="space-y-5 py-4">
@@ -455,6 +500,7 @@ export default function AttendanceLog() {
 
                   </Select>
 
+                  <Input value={newAttendance.name} onChange={(e) => setNewAttendance({...newAttendance, name: e.target.value})} placeholder="Full Name" className="mt-2" />
                 </div>
 
 
@@ -469,6 +515,8 @@ export default function AttendanceLog() {
 
                     <SelectTrigger className="mt-2 h-11"><SelectValue /></SelectTrigger>
 
+                  <Select value={newAttendance.role} onValueChange={(value) => setNewAttendance({...newAttendance, role: value})}>
+                    <SelectTrigger className="mt-2"><SelectValue /></SelectTrigger>
                     <SelectContent>
 
                       {departments.map(dept => (
@@ -523,7 +571,6 @@ export default function AttendanceLog() {
                   </div>
 
                   <div>
-
                     <Label>Clock Out</Label>
 
                     <Input type="time" value={newAttendance.clockOut} onChange={(e) => setNewAttendance({ ...newAttendance, clockOut: e.target.value })} className="mt-2 h-11" />
@@ -531,8 +578,6 @@ export default function AttendanceLog() {
                   </div>
 
                 </div>
-
-
 
                 <Button onClick={handleMarkAttendance} className="w-full h-11">
 
@@ -547,9 +592,6 @@ export default function AttendanceLog() {
           </Dialog>
 
         </div>
-
-
-
         {/* Stats Cards */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -562,10 +604,31 @@ export default function AttendanceLog() {
 
           <StatCard label="ON LEAVE" value="06" accentColor="#a855f7" badge={{ text: 'Planned today', tone: 'purple' }} />
 
+          <StatCard
+            label="TOTAL PRESENT TODAY"
+            value="142 / 156"
+            accentColor="#10b981"
+            badge={{ text: '↑ 91% today', tone: 'green' }}
+          />
+          <StatCard
+            label="LATE ARRIVALS"
+            value="08"
+            accentColor="#f59e0b"
+            badge={{ text: '↑ 2 vs yesterday', tone: 'amber' }}
+          />
+          <StatCard
+            label="AVG. WORK HOURS"
+            value="8.2h"
+            accentColor="#3b82f6"
+            badge={{ text: '↑ 0.4h this week', tone: 'blue' }}
+          />
+          <StatCard
+            label="ON LEAVE"
+            value="06"
+            accentColor="#a855f7"
+            badge={{ text: 'Planned today', tone: 'purple' }}
+          />
         </div>
-
-
-
         {/* Filters */}
 
         <div className="flex flex-col md:flex-row gap-4 mb-6 items-center">
@@ -605,53 +668,45 @@ export default function AttendanceLog() {
           </Select>
 
         </div>
-
-
-
         {/* Table */}
-
         <div className="bg-white rounded-2xl overflow-hidden border shadow-sm">
-
           <table className="w-full">
-
             <thead className="bg-gray-50 border-b">
-
               <tr>
-
                 <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">EMPLOYEE NAME</th>
-
                 <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">DATE</th>
-
                 <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">CLOCK IN</th>
-
                 <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">CLOCK OUT</th>
-
                 <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">TOTAL HOURS</th>
-
                 <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">STATUS</th>
-
+        <div className="bg-white rounded-2xl overflow-hidden border shadow-sm">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">EMPLOYEE NAME</th>
+                <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">DATE</th>
+                <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">CLOCK IN</th>
+                <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">CLOCK OUT</th>
+                <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">TOTAL HOURS</th>
+                <th className="text-left py-4 px-6 font-medium text-sm text-gray-600">STATUS</th>
                 <th className="text-right py-4 px-6 font-medium text-sm">ACTION</th>
-
               </tr>
-
             </thead>
-
             <tbody className="divide-y">
-
               {filteredData.map((record) => (
-
                 <tr key={record.id} className="hover:bg-gray-50">
-
+            <tbody className="divide-y">
+              {filteredData.map((record) => (
+                <tr key={record.id} className="hover:bg-gray-50">
                   <td className="py-4 px-6">
 
                     <div className="font-medium">{record.name}</div>
 
                     <div className="text-xs text-gray-500">{record.role}</div>
-
                   </td>
-
                   <td className="py-4 px-6 text-sm text-gray-600">{record.date}</td>
 
+                  <td className="py-4 px-6 text-sm text-gray-600">{record.date}</td>
                   <td className="py-4 px-6 text-sm font-medium">{record.clockIn}</td>
 
                   <td className="py-4 px-6 text-sm font-medium">{record.clockOut}</td>
@@ -659,15 +714,14 @@ export default function AttendanceLog() {
                   <td className="py-4 px-6 text-sm font-medium">{record.hours}</td>
 
                   <td className="py-4 px-6">
-
                     <Badge variant={record.status === "Present" ? "default" : "secondary"}>{record.status}</Badge>
-
                   </td>
-
                   <td className="py-4 px-6 text-right text-sm">
-
                     <button className="text-blue-600 hover:text-blue-700 mr-3"><Edit2 size={18} /></button>
-
+                    <Badge variant={record.status === "Present" ? "default" : "secondary"}>{record.status}</Badge>
+                  </td>
+                  <td className="py-4 px-6 text-right text-sm">
+                    <button className="text-blue-600 hover:text-blue-700 mr-3"><Edit2 size={18} /></button>
                     <button onClick={() => handleDelete(record.id)} className="text-red-600 hover:text-red-700"><Trash2 size={18} /></button>
 
                   </td>
@@ -679,11 +733,7 @@ export default function AttendanceLog() {
             </tbody>
 
           </table>
-
-
-
           {/* Empty state */}
-
           {filteredData.length === 0 && (
 
             <div className="py-16 text-center text-gray-400">
