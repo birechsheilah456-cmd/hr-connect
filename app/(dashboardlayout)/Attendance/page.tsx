@@ -3,165 +3,77 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
 import { Input } from '@/components/ui/input';
-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
 import { Badge } from '@/components/ui/badge';
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-
 import { Label } from '@/components/ui/label';
-
-
-
 interface AttendanceRecord {
-
   id: number;
-
   name: string;
-
   role: string;
-
   date: string;
-
   clockIn: string;
-
   clockOut: string;
-
   hours: string;
-
   status: string;
-
 }
-
-
-
 interface StatCardProps {
-
   label: string;
-
   value: string;
-
   accentColor: string;
-
   badge: { text: string; tone: 'blue' | 'green' | 'red' | 'amber' | 'purple' };
-
 }
-
-
-
 const toneStyles = {
-
   blue: 'bg-blue-50 text-blue-700',
-
   green: 'bg-green-50 text-green-700',
-
   red: 'bg-red-50 text-red-700',
-
   amber: 'bg-amber-50 text-amber-700',
-
   purple: 'bg-purple-50 text-purple-700',
-
 };
-
-
-
 function StatCard({ label, value, accentColor, badge }: StatCardProps) {
-
   return (
-
     <div
-
       className="rounded-xl border-l-4 bg-white p-5 shadow-sm"
-
       style={{ borderLeftColor: accentColor }}
 
     >
-
       <p className="text-xs font-semibold tracking-wide text-slate-400">{label}</p>
-
       <div className="mt-3 flex items-center justify-between">
-
         <p className="text-3xl font-bold text-slate-900">{value}</p>
-
         <span className={`rounded-md px-2 py-1 text-xs font-semibold ${toneStyles[badge.tone]}`}>
-
           {badge.text}
-
         </span>
-
       </div>
-
     </div>
-
   );
-
 }
-
-
-
 const employeeList = [
-
   { name: "Sarah Jenkins", role: "Marketing Team" },
-
   { name: "Marcus Vane", role: "Operations" },
-
   { name: "Leo Zhang", role: "Engineering" },
-
   { name: "Amira Osei", role: "HR & Admin" },
-
   { name: "David Kimani", role: "Design Team" },
-
   { name: "Priya Nair", role: "Sales" },
-
   { name: "James Mwangi", role: "Finance" },
-
 ];
-
-
-
 const departments = ["Marketing Team", "Operations", "Engineering", "HR & Admin", "Design Team", "Sales", "Finance"];
-
-
-
 function getInitials(name: string) {
-
   return name.split(' ').map(n => n[0]).join('').toUpperCase();
-
 }
-
-
-
 const avatarColors: Record<string, string> = {
-
   "Marketing Team": "bg-pink-100 text-pink-700",
-
   "Operations": "bg-orange-100 text-orange-700",
-
   "Engineering": "bg-blue-100 text-blue-700",
-
   "HR & Admin": "bg-purple-100 text-purple-700",
-
   "Design Team": "bg-teal-100 text-teal-700",
-
   "Sales": "bg-green-100 text-green-700",
-
   "Finance": "bg-amber-100 text-amber-700",
-
 };
-
-
-
 const defaultData: AttendanceRecord[] = [
-
   { id: 1, name: "Sarah Jenkins", role: "Marketing Team", date: "Oct 25, 2023", clockIn: "08:45 AM", clockOut: "05:30 PM", hours: "8h 45m", status: "Present" },
-
   { id: 2, name: "Marcus Vane", role: "Operations", date: "Oct 25, 2023", clockIn: "09:12 AM", clockOut: "06:05 PM", hours: "8h 53m", status: "Remote" },
-
   { id: 3, name: "Leo Zhang", role: "Engineering", date: "Oct 25, 2023", clockIn: "09:45 AM", clockOut: "06:30 PM", hours: "8h 45m", status: "Late" },
-
 ];
 interface StatCardProps {
   label: string;
@@ -200,70 +112,34 @@ const departments = ["Marketing Team", "Operations", "Engineering", "HR & Admin"
 
 
 export default function AttendanceLog() {
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const [statusFilter, setStatusFilter] = useState<string>('All');
-
   const [selectedDate, setSelectedDate] = useState('2023-10-25');
-
   const [isMarkModalOpen, setIsMarkModalOpen] = useState(false);
-
   const [isLoaded, setIsLoaded] = useState(false);
-
-
-
   const [newAttendance, setNewAttendance] = useState({
-
     name: '',
-
     role: 'Marketing Team',
-
     clockIn: '',
-
     clockOut: '',
-
     status: 'Present'
-
   });
-
-
-
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
-
-
-
   // Load from localStorage on mount only
-
   useEffect(() => {
-
     try {
-
       const saved = localStorage.getItem('attendanceRecords');
-
       if (saved) {
-
         const parsed = JSON.parse(saved);
-
         if (Array.isArray(parsed) && parsed.length > 0) {
-
-           
-
           // eslint-disable-next-line react-hooks/set-state-in-effect
           setRecords(parsed);
-
         } else {
-
           setRecords(defaultData);
-
         }
-
       } else {
-
         setRecords(defaultData);
-
       }
-
     } catch {
 
   useEffect(() => {
@@ -277,115 +153,60 @@ export default function AttendanceLog() {
         { id: 3, name: "Leo Zhang", role: "Engineering", date: "Oct 25, 2023", clockIn: "09:45 AM", clockOut: "06:30 PM", hours: "8h 45m", status: "Late" },
       ];
       setRecords(defaultData);
-
     }
-
     setIsLoaded(true);
-
   }, []);
-
-
-
   // Save to localStorage only after initial load
-
   useEffect(() => {
-
     if (!isLoaded) return;
-
     try {
-
       localStorage.setItem('attendanceRecords', JSON.stringify(records));
-
     } catch {
-
       console.error('Failed to save records');
-
     }
-
   }, [records, isLoaded]);
-
-
-
   const handleEmployeeSelect = (selectedName: string) => {
-
     const employee = employeeList.find(e => e.name === selectedName);
-
     setNewAttendance({
-
       ...newAttendance,
-
       name: selectedName,
-
       role: employee ? employee.role : newAttendance.role,
-
     });
 
   };
-
-
-
   const filteredData = records.filter(item => {
-
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesStatus = statusFilter === 'All' || item.status === statusFilter;
-
     return matchesSearch && matchesStatus;
-
   });
 
-
-
   const calculateHours = (clockIn: string, clockOut: string): string => {
-
     if (!clockIn || !clockOut) return "Pending";
-
     return "8h 30m";
 
   };
-
-
-
   const handleMarkAttendance = () => {
-
     if (!newAttendance.name || !newAttendance.clockIn) {
-
       alert("Please fill required fields");
-
       return;
-
     }
-
     const newRecord: AttendanceRecord = {
-
       id: Date.now(),
-
       name: newAttendance.name,
-
       role: newAttendance.role,
-
       date: new Date(selectedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-
       clockIn: newAttendance.clockIn,
-
       clockOut: newAttendance.clockOut || "Pending",
-
       hours: calculateHours(newAttendance.clockIn, newAttendance.clockOut),
 
       status: newAttendance.status
-
     };
 
     setRecords(prev => [newRecord, ...prev]);
-
     setIsMarkModalOpen(false);
-
     setNewAttendance({ name: '', role: 'Marketing Team', clockIn: '', clockOut: '', status: 'Present' });
 
   };
-
-
-
   const handleDelete = (id: number) => {
 
     if (confirm("Delete this record?")) {
@@ -558,6 +379,9 @@ export default function AttendanceLog() {
                   </Select>
 
                 </div>
+
+
+
                 {/* Clock In / Clock Out */}
 
                 <div className="grid grid-cols-2 gap-4">
